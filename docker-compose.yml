@@ -1,0 +1,36 @@
+version: "3"
+services:
+  ShardingSphereProxy:
+    image: apache/shardingsphere-proxy
+    container_name: proxy
+    restart: always
+    command: server /data
+    ports:
+      - 13307:3307
+    volumes:
+      - ./services/shardingSphereProxy/conf:/opt/shardingsphere-proxy/conf:rw
+      - ./services/shardingSphereProxy/ext-lib:/opt/shardingsphere-proxy/ext-lib:rw
+    environment:
+      - JVM_OPTS="-Djava.awt.headless=true"
+    networks:
+      - my-services
+
+  mysql8:
+    image: mysql:8.0
+    container_name: mysql8
+    environment:
+      TZ: ${TZ}
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./services/mysql8/conf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ./services/mysql8/log:/var/log/mysql/:rw
+      #- ./services/mysql8/data:/var/lib/mysql/:rw
+    restart: always
+    networks:
+      - my-services
+
+networks:
+  my-services:
+
